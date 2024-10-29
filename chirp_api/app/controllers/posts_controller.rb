@@ -4,7 +4,7 @@ class PostsController < ApplicationController
   def create
     @post = current_user.posts.new(post_params)
     if @post.save
-      render json: @post, status: :created
+      render json: post_transform(@post), status: :created
     else
       render json: @post.errors, status: :unprocessable_entity
     end
@@ -13,7 +13,7 @@ class PostsController < ApplicationController
   def update
     if @post.user_id == @current_user.id
       if @post.update(post_params)
-        render json: @post
+        render json: post_transform(@post), status: :ok
       else
         render json: @post.errors, status: :unprocessable_entity
       end
@@ -41,20 +41,35 @@ class PostsController < ApplicationController
       @posts = Post.all
     end
     
-    render json: @posts.as_json(include: :comments), status: :ok
+    render json: post_transform(@posts), status: :ok
   end
 
   def show
-    render json: @post.as_json(include: :comments), status: :ok
+    render json: post_transform(@post), status: :ok
   end
 
   private
 
   def set_post
-    @post = Post.includes(:comments).find(params[:id])
+    @post = Post.includes(:comments, :user).find(params[:id])
   end
 
   def post_params
     params.require(:post).permit(:content)
+  end
+
+  def post_transform(post)
+    return post.as_json(
+      except: [:user_id],
+      include: {
+        comments: {
+          include: {
+            user: { only: [:id, :username] }
+          },
+          only: [:id, :content, :created_at]
+        },
+        user: { only: [:id, :username] }
+      }
+    )
   end
 end

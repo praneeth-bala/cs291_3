@@ -5,7 +5,7 @@ class CommentsController < ApplicationController
     @comment.user = current_user
 
     if @comment.save
-      render json: @comment, status: :created
+      render json: comment_transform(@comment), status: :created
     else
       render json: @comment.errors, status: :unprocessable_entity
     end
@@ -15,5 +15,14 @@ class CommentsController < ApplicationController
 
   def comment_params
     params.require(:comment).permit(:content)
+  end
+
+  def comment_transform(comment)
+    return comment.as_json(
+      except: [:user_id],
+      include: {
+        user: { only: [:id, :username] }
+      }
+    )
   end
 end

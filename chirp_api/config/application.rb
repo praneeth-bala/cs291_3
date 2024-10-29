@@ -32,5 +32,16 @@ module ChirpApi
     config.session_store :cookie_store, key: '_interslice_session'
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use config.session_store, config.session_options
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins 'http://localhost:3001'
+        resource '*',
+          headers: :any,
+          methods: [:get, :post, :put, :patch, :delete, :options, :head],
+          expose: ['access-token', 'expiry', 'token-type', 'uid', 'client'],
+          credentials: true
+      end
+    end
   end
 end
