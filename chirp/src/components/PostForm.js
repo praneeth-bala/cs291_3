@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './PostList.css';
 
 const PostForm = ({ onSubmit }) => {
   const [content, setContent] = useState('');
