@@ -12,16 +12,22 @@ const LoginPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Enter your username"
-        required
-      />
-      <button type="submit">Login</button>
-    </form>
+    <div className="login-container">
+      <div className="logo-container">
+        <img src="/logo.png" alt="Logo" className="logo" />
+        <h1 className="project-name">Chirp Chirp</h1>
+      </div>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Enter your username"
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+    </div>
   );
 };
 

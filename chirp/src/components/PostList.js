@@ -55,6 +55,8 @@ const PostList = () => {
   };
 
   return (
+    <div>
+    <button className="logout-button" onClick={handleLogout}>Logout</button>
     <div className="post-list-container">
       <header className="post-list-header">
         <h1>Posts</h1>
@@ -65,7 +67,6 @@ const PostList = () => {
           onChange={handleUsernameChange}
           className="username-filter-input"
         />
-        <button className="logout-button" onClick={handleLogout}>Logout</button>
       </header>
       
       <PostForm onSubmit={handlePostSubmit} />
@@ -98,6 +99,7 @@ const PostList = () => {
           </li>
         ))}
       </ul>
+    </div>
     </div>
   );
 };
