@@ -38,9 +38,9 @@ class PostsController < ApplicationController
   def list
     if params[:username].present?
       user = User.find_by(username: params[:username])
-      @posts = user ? Post.where(user_id: user.id) : []
+      @posts = user ? Post.where(user_id: user.id).order(created_at: :desc) : []
     else
-      @posts = Post.all
+      @posts = Post.order(created_at: :desc)
     end
     
     render json: post_transform(@posts), status: :ok

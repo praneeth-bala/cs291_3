@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { createPost, fetchPosts, fetchPostsUsername } from '../api';
+import { createPost, fetchPosts, fetchPostsUsername, updatePost, deletePost } from '../api';
 import { useAuth } from '../AuthContext';
 import PostForm from './PostForm';
 import './PostList.css';
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
-  const [username, setUsername] = useState(''); // State for username filter
+  const [username, setUsername] = useState('');
+  const [editingPostId, setEditingPostId] = useState(null);
+  const [editContent, setEditContent] = useState('');
   const { handleLogout } = useAuth();
 
   const loadPosts = async (username) => {
-    let data=[];
-    if(username){
+    let data = [];
+    if (username) {
       data = await fetchPostsUsername(username);
-    }
-    else{
+    } else {
       data = await fetchPosts();
     }
     setPosts(data);
@@ -31,12 +32,30 @@ const PostList = () => {
   };
 
   const handleUsernameChange = (e) => {
-    setUsername(e.target.value); // Update username filter
+    setUsername(e.target.value);
+  };
+
+  const handleEditClick = (post) => {
+    setEditingPostId(post.id);
+    setEditContent(post.content);
+  };
+
+  const handleEditSubmit = async (postId) => {
+    const updatedPost = await updatePost(postId, editContent);
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => (post.id === postId ? updatedPost : post))
+    );
+    setEditingPostId(null);
+    setEditContent('');
+  };
+
+  const handleDelete = async (postId) => {
+    await deletePost(postId);
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
   };
 
   return (
     <div className="post-list-container">
-      {/* Header with title, filter, and logout button */}
       <header className="post-list-header">
         <h1>Posts</h1>
         <input
@@ -49,19 +68,33 @@ const PostList = () => {
         <button className="logout-button" onClick={handleLogout}>Logout</button>
       </header>
       
-      {/* Post creation form */}
       <PostForm onSubmit={handlePostSubmit} />
-      
-      {/* List of posts */}
+
       <ul className="posts-list">
         {posts.map((post) => (
           <li key={post.id} className="post-item">
-            <Link to={`/posts/${post.id}`} className="post-link">
-              <h2>{post.content}</h2>
-              <p>By: {post.user.username}</p>
-              <p>Comments: {post.comments.length}</p>
-              <p>Last Updated: {new Date(post.updated_at).toLocaleString()}</p>
-            </Link>
+            {editingPostId === post.id ? (
+              <>
+                <input
+                  type="text"
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                />
+                <button onClick={() => handleEditSubmit(post.id)}>Save</button>
+                <button onClick={() => setEditingPostId(null)}>Cancel</button>
+              </>
+            ) : (
+              <>
+                <Link to={`/posts/${post.id}`} className="post-link">
+                  <h2>{post.content}</h2>
+                  <p>By: {post.user.username}</p>
+                  <p>Comments: {post.comments.length}</p>
+                  <p>Last Updated: {new Date(post.updated_at).toLocaleString()}</p>
+                </Link>
+                <button onClick={() => handleEditClick(post)}>Edit</button>
+                <button onClick={() => handleDelete(post.id)}>Delete</button>
+              </>
+            )}
           </li>
         ))}
       </ul>
