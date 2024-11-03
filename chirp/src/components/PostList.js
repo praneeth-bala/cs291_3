@@ -27,8 +27,13 @@ const PostList = () => {
   }, [username]);
 
   const handlePostSubmit = async (content) => {
-    const newPost = await createPost(content);
-    setPosts((prevPosts) => [newPost, ...prevPosts]);
+    try{
+      const newPost = await createPost(content);
+      setPosts((prevPosts) => [newPost, ...prevPosts]);
+    }
+    catch{
+      alert("Restricted content, unable to create post");
+    }
   };
 
   const handleUsernameChange = (e) => {

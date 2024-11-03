@@ -32,8 +32,13 @@ const PostDetail = () => {
   }, [id]);
 
   const handleCommentSubmit = async (content) => {
-    const newComment = await createComment(id, content);
-    setComments((prev) => [newComment, ...prev]);
+    try{
+      const newComment = await createComment(id, content);
+      setComments((prev) => [newComment, ...prev]);
+    }
+    catch{
+      alert("Restricted content, unable to create comment");
+    }
   };
 
   if (fof) return <div>Post not found</div>;
