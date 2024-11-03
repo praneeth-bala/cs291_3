@@ -10,7 +10,7 @@ const PostList = () => {
   const [username, setUsername] = useState('');
   const [editingPostId, setEditingPostId] = useState(null);
   const [editContent, setEditContent] = useState('');
-  const { handleLogout } = useAuth();
+  const { user, handleLogout } = useAuth(); // Assume user has information about the logged-in user
 
   const loadPosts = async (username) => {
     let data = [];
@@ -92,8 +92,13 @@ const PostList = () => {
                   <p>Comments: {post.comments.length}</p>
                   <p>Last Updated: {new Date(post.updated_at).toLocaleString()}</p>
                 </Link>
-                <button onClick={() => handleEditClick(post)}>Edit</button>
-                <button onClick={() => handleDelete(post.id)}>Delete</button>
+                {/* Show edit and delete buttons only if the current user is the post creator */}
+                {user && user.id === post.user.id && (
+                  <>
+                    <button onClick={() => handleEditClick(post)}>Edit</button>
+                    <button onClick={() => handleDelete(post.id)}>Delete</button>
+                  </>
+                )}
               </>
             )}
           </li>

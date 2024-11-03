@@ -8,8 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Attempt to get the user from local storage (if applicable) or check the login status
-    const storedUser = localStorage.getItem('user'); // Optional: if you want to persist user info
+    const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -18,23 +17,24 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogin = async (username) => {
     try {
-      await login(username)
-      const userData = { username }; // Modify to match your user structure if needed
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData)); // Optionally store user data
+      const userData = await login(username); // Await the login request here
+      setUser(userData.user);
+      localStorage.setItem('user', JSON.stringify(userData.user)); // Optionally store user data
+      return userData; // Return userData to signal successful login
     } catch (error) {
       console.error('Login failed', error);
       setUser(null);
+      throw error; // Re-throw error to be handled in LoginPage
     }
   };
 
   const handleLogout = async () => {
-    try{
-        await logout()
-        setUser(null);
-        localStorage.removeItem('user');
+    try {
+      await logout();
+      setUser(null);
+      localStorage.removeItem('user');
     } catch (error) {
-        console.error('Logout failed', error);
+      console.error('Logout failed', error);
     }
   };
 
@@ -50,5 +50,5 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => {
-    return useContext(AuthContext);
+  return useContext(AuthContext);
 };
