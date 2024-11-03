@@ -20,6 +20,11 @@ export const fetchPosts = async () => {
   return response.data; // Return the fetched posts
 };
 
+export const fetchPostsUsername = async (username) => {
+  const response = await axios.post('/posts/list', { username });
+  return response.data; // Return the fetched posts
+};
+
 export const fetchPost = async (id) => {
   const response = await axios.post(`/posts/${id}`);
   return response.data; // Return the fetched post

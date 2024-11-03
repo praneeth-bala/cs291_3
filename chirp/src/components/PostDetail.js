@@ -7,13 +7,23 @@ import './PostDetail.css';
 const PostDetail = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
+  const [fof, setFof] = useState(false);
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
     const loadPost = async () => {
-      const data = await fetchPost(id);
+      let data;
+      try {
+        data = await fetchPost(id);
+      }
+      catch {
+        setFof(true);
+        return false;
+      }
+      setFof(false);
       setPost(data);
       setComments(data.comments);
+      return true;
     };
     loadPost();
   }, [id]);
@@ -23,6 +33,7 @@ const PostDetail = () => {
     setComments((prev) => [...prev, newComment]);
   };
 
+  if (fof) return <div>Post not found</div>;
   if (!post) return <div>Loading...</div>;
 
   return (

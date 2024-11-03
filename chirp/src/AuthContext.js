@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     try{
         await logout()
         setUser(null);
-        localStorage.removeItem('user'); // Clear user data
+        localStorage.removeItem('user');
     } catch (error) {
         console.error('Logout failed', error);
     }

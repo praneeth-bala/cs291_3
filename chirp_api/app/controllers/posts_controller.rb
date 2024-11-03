@@ -35,8 +35,9 @@ class PostsController < ApplicationController
   end
 
   def list
-    if params[:user_id].present?
-      @posts = Post.where(user_id: params[:userid])
+    if params[:username].present?
+      user = User.find_by(username: params[:username])
+      @posts = user ? Post.where(user_id: user.id) : []
     else
       @posts = Post.all
     end
