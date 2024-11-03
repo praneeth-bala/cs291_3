@@ -1,3 +1,4 @@
+# app/controllers/comments_controller.rb
 class CommentsController < ApplicationController
   def create
     @post = Post.find(params[:post_id])
@@ -7,7 +8,8 @@ class CommentsController < ApplicationController
     if @comment.save
       render json: comment_transform(@comment), status: :created
     else
-      render json: @comment.errors, status: :unprocessable_entity
+      # Return validation errors in a consistent format
+      render json: { errors: @comment.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
@@ -18,7 +20,7 @@ class CommentsController < ApplicationController
   end
 
   def comment_transform(comment)
-    return comment.as_json(
+    comment.as_json(
       except: [:user_id],
       include: {
         user: { only: [:id, :username] }

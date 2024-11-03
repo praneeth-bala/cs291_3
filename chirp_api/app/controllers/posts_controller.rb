@@ -1,3 +1,4 @@
+# app/controllers/posts_controller.rb
 class PostsController < ApplicationController
   before_action :set_post, only: [:update, :destroy, :show]
 
@@ -6,16 +7,16 @@ class PostsController < ApplicationController
     if @post.save
       render json: post_transform(@post), status: :created
     else
-      render json: @post.errors, status: :unprocessable_entity
+      render json: { errors: @post.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def update
-    if @post.user_id == @current_user.id
+    if @post.user_id == current_user.id
       if @post.update(post_params)
         render json: post_transform(@post), status: :ok
       else
-        render json: @post.errors, status: :unprocessable_entity
+        render json: { errors: @post.errors.full_messages }, status: :unprocessable_entity
       end
     else
       render json: {}, status: :unauthorized
@@ -23,11 +24,11 @@ class PostsController < ApplicationController
   end
 
   def destroy
-    if @post.user_id == @current_user.id
+    if @post.user_id == current_user.id
       if @post.destroy
         render json: {}, status: :ok
       else
-        render json: @post.errors, status: :unprocessable_entity
+        render json: { errors: @post.errors.full_messages }, status: :unprocessable_entity
       end
     else
       render json: {}, status: :unauthorized
@@ -60,7 +61,7 @@ class PostsController < ApplicationController
   end
 
   def post_transform(post)
-    return post.as_json(
+    post.as_json(
       except: [:user_id],
       include: {
         comments: {
